@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<script>
+  <![CDATA[
+    with (WScript)
+    {
+      StdOut.Write("Please enter the first number: ");
+      var x = Number(StdIn.ReadLine());
+      StdOut.Write("Please enter the second number: ");
+      var y = Number(StdIn.ReadLine());
+      
+      StdOut.WriteLine("Sum: " + (x + y));
+      StdOut.WriteLine("Difference: " + (Math.abs(x - y)));
+      StdOut.WriteLine("Product: " + (x * y));
+      
+      StdIn.SkipLine();
+    }
+  ]]>
+</script>
