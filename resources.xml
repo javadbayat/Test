@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<resources>
+    <resource id="self">Javad Bayat</resource>
+    <resource id="mother">Narges Salehi</resource>
+    <resource id="father">Mohammad Reza Bayat</resource>
+    <resource id="brother">Sina Bayat</resource>
+</resources>
