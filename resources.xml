@@ -1,4 +1,9 @@
 <?xml version="1.0" ?>
+<!--
+The URL of this file is:
+https://github.com/javadbayat/Test/blob/main/resources.xml?raw=true
+You can set the resources attribute of the <t:thread> element to this URL in order to test online resources for your threads.
+-->
 <resources>
     <resource id="self">Javad Bayat</resource>
     <resource id="mother">Narges Salehi</resource>
