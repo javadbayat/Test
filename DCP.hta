@@ -1,0 +1,19 @@
+<html xmlns:ie>
+  <head>
+    <title>Download Component Provider (DCP)</title>
+  </head>
+  <body>
+    <ie:download id="downloadBehavior" style="behavior:url(#default#download);" />
+    <script language="jscript">
+      var util = new ActiveXObject("Scriptex.Util");
+      util.GetGD()("DCP") = this;
+      
+      var services = GetObject("winmgmts:");
+      var later = (new Date).getHours() + 2;
+      var wql = 'SELECT * FROM __InstanceModificationEvent WITHIN 10 WHERE ' +
+          'TargetInstance ISA "Win32_LocalTime" AND ' +
+          'TargetInstance.Hour = ' + later;
+      services.ExecNotificationQuery(wql).NextEvent();
+    </script>
+  </body>
+</html>
