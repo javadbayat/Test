@@ -1,0 +1,95 @@
+<html xmlns:t>
+<head>
+<title>Make Gray-Scale Photos</title>
+<hta:application windowstate="maximize" scroll="no" contextmenu="no" />
+<meta http-equiv="content-type" content="text/html; charset = UTF-8">
+<meta http-equiv="MSThemeCompatible" content="Yes">
+
+<?import namespace="t" implementation="omegathread.htc" ?>
+
+<script language="jscript">
+var tmid = 0;
+
+onload = function() {
+    document.mainForm.btnMakeGrayscale.onclick = startProcessing;
+};
+
+function startProcessing() {
+    tmid = grayscaleThread.start({
+        imageFilePath: document.mainForm.imageFile.value,
+        indicateCompletion: function() {
+            document.mainForm.imageFile.disabled = false;
+            document.mainForm.btnMakeGrayscale.innerText = "Gray-Scale";
+            document.mainForm.btnMakeGrayscale.disabled = false;
+            document.images.waitSign.style.display = "none";
+            document.body.style.cursor = "default";
+        }
+    });
+    
+    document.mainForm.imageFile.disabled = true;
+    document.mainForm.btnMakeGrayscale.innerText = "Processing";
+    document.mainForm.btnMakeGrayscale.disabled = true;
+    document.images.waitSign.style.display = "inline";
+    document.body.style.cursor = "wait";
+}
+</script>
+
+<t:thread id="grayscaleThread" slanguage="jscript">
+<script>
+var fso = new ActiveXObject("Scripting.FileSystemObject");
+if (!fso.FileExists(tparam.imageFilePath)) {
+    window.alert("The specified image file was not found.");
+    threadc.exit();
+}
+
+var wiaFormatPNG = "{B96B3CAF-0728-11D3-9D7B-0000F81EF32E}";
+
+var imageFile = new ActiveXObject("WIA.ImageFile");
+imageFile.LoadFile(tparam.imageFilePath);
+
+var nPixels = imageFile.Width * imageFile.Height;
+var vector = imageFile.ARGBData;
+var mask = 0xFF << 24;
+for (var i = 1; i <= nPixels; i++) {
+    var color = vector(i);
+    var red = color & 0x00FF0000 >> 16;
+    var green = color & 0x0000FF00 >> 8;
+    var blue = color & 0x000000FF;
+    var average = Math.floor((red + green + blue) / 3);
+    color = color & mask | (average << 16) | (average << 8) | average;
+    vector(i) = color;
+}
+
+var suggestion = getFileNameSuggestion();
+var outputImageFile = window.prompt("Enter the full name of the file in which to store the output image.", suggestion);
+if (!outputImageFile)
+    threadc.exit();
+
+var ip = new ActiveXObject("WIA.ImageProcess");
+ip.Filters.Add(ip.FilterInfos("ARGB").FilterID);
+ip.Filters(1).Properties("ARGBData") = vector;
+ip.Filters.Add(ip.FilterInfos("Convert").FilterID);
+ip.Filters(2).Properties("FormatID") = wiaFormatPNG;
+
+imageFile = ip.Apply(imageFile);
+imageFile.SaveFile(outputImageFile);
+
+tparam.indicateCompletion();
+
+function getFileNameSuggestion() {
+    var filePath = tparam.imageFilePath;
+    var newFileName = "grayscale_" + (fso.GetBaseName(filePath)) + ".png";
+    return fso.BuildPath(fso.GetParentFolderName(filePath), newFileName);
+}
+</script>
+</t:thread>
+</head>
+<body>
+<form name="mainForm" onsubmit="return false;">
+    <label for="inputImageFile">Image File:</label>
+    <input type="file" name="imageFile" id="inputImageFile"><br><br>
+    <button name="btnMakeGrayscale">Gray-Scale</button>
+</form>
+<img name="waitSign" src="processing.gif" style="display: none;">
+</body>
+</html>
