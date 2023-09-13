@@ -30,10 +30,10 @@
                 throw new Error;
             
             var bytes = new Array(4);
-            bytes[0] = rawIP & 0xFF000000 >> 24;
-            bytes[1] = rawIP & 0x00FF0000 >> 16;
-            bytes[2] = rawIP & 0x0000FF00 >> 8;
-            bytes[3] = rawIP & 0x000000FF;
+            bytes[0] = (rawIP & 0xFF000000) >> 24;
+            bytes[1] = (rawIP & 0x00FF0000) >> 16;
+            bytes[2] = (rawIP & 0x0000FF00) >> 8;
+            bytes[3] = (rawIP & 0x000000FF);
             
             IPAddress = bytes.join(".");
         }
