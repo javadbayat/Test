@@ -1,0 +1,91 @@
+<html xmlns:IE>
+    <head>
+        <title>Test Download</title>
+        <hta:application id="app" applicationname="Test Download" version="1.0" navigable="no" windowstate="maximize" scroll="auto" showintaskbar="no" />
+
+        <meta name="author" content="Javad Bayat">
+        <meta http-equiv="content-type" content="text/html; charset = UTF-8">
+        <meta http-equiv="MSThemeCompatible" content="Yes">
+
+        <IE:Download id="downloader" style="behavior: url(#default#download);" />
+
+        <script language="jscript">
+            onload = function() {
+                /*
+                var args = parseCommandLine(app.commandLine);
+                if (args < 2) {
+                    alert("Not enough arguments");
+                    window.close();
+                    return;
+                }
+
+                var url = args[1];
+                downloadFile(url);
+                */
+
+                var scriptex = new ActiveXObject("Scriptex.Util");
+                scriptex.GetGD()("TestDL") = window;
+            };
+
+            function parseCommandLine(cl) {
+                var power = false, temp = "";
+                for (var i = 0; i < cl.length; i++) {
+                    var c = cl.charAt(i);
+
+                    if (c == '"')
+                        power = !power;
+                    else if (power && (c == " "))
+                        temp += "\0";
+                    else
+                        temp += c;
+                }
+
+                var result = temp.split(" ");
+                for (var i = 0; i < result.length; i++)
+                    result[i] = result[i].replace(/\0/g, " ");
+
+                return result;
+            }
+
+            function downloadFile(url) {
+                downloader.startDownload("https://envoy.lol/" + url, downloadCallback);
+                operationStatus.style.display = "";
+                tblDownloadResult.style.display = "none";
+            }
+
+            function downloadCallback(fileContent) {
+                operationStatus.style.display = "none";
+                tblDownloadResult.style.display = "";
+                resultData.innerText = fileContent;
+            }
+        </script>
+
+        <style type="text/css">
+            #tblDownloadResult {
+                border-collapse: collapse;
+            }
+
+            #resultData {
+                padding: 4px;
+            }
+
+            #operationStatus {
+                font-size: large;
+            }
+        </style>
+    </head>
+    <body bgcolor="#a2ecf9">
+        <p id="operationStatus" align="center" style="display: none;">
+            <img src="https://javadbayat.github.io/curl/assets/images/spinner.gif" width="70px" height="70px" align="middle">
+            <span>Downloading...</span>
+        </p>
+        <table id="tblDownloadResult" border="2px" style="display: none;">
+            <tr>
+                <th height="30px" align="center" valign="middle" bgcolor="DarkSalmon">File Contents</th>
+            </tr>
+            <tr>
+                <td id="resultData" bgcolor="white"></td>
+            </tr>
+        </table>
+    </body>
+</html>
