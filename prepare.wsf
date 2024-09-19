@@ -1,0 +1,56 @@
+<package>
+<job id="PrepareInf">
+<script language="VBScript">
+' The file "linux.inf" used here is part of the RNDIS Driver Pack.
+' Feel free to download it from the following link:
+' https://dl.openhandhelds.org/gp2x/uploads/Home/Windows/RNDIS%20Drivers%20Pack.zip
+
+Const BOGUS_ID = "USB\VID_0525&PID_a4a2"
+Sub ModifyINF(filePath, DeviceInstID)
+    Dim fso, infFile, infContent
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    Set infFile = fso.OpenTextFile(filePath)
+    infContent = infFile.ReadAll()
+    infFile.Close
+    
+    infContent = Replace(infContent, BOGUS_ID, DeviceInstID)
+    
+    Set infFile = fso.OpenTextFile(filePath, 2)
+    infFile.Write infContent
+    infFile.Close
+    
+    Set fso = Nothing
+    Set infFile = Nothing
+End Sub
+</script>
+<script language="JScript">
+var services = GetObject("winmgmts:");
+var query = 'SELECT * FROM CIM_LogicalDevice WHERE Description LIKE "%RNDIS%"';
+var col = services.ExecQuery(query);
+var rndis_device = null;
+for (var e = new Enumerator(col); !e.atEnd(); e.moveNext()) {
+    var device = e.item();
+    if (device.Status === null)
+        continue;
+    
+    if (device.ConfigManagerErrorCode == 24) {
+        if (device.DeviceID === null) {
+            WSH.Echo("Failed to obtain the Device Instance ID of the current RNDIS device!\nTechnical details: CIM_LogicalDevice.DeviceID returned NULL");
+            WSH.Quit();
+        }
+        
+        rndis_device = device;
+        break;
+    }
+}
+
+if (!rndis_device) {
+    WSH.Echo("Failed to find the current RNDIS Network Adapter device!");
+    WSH.Quit();
+}
+
+ModifyINF("linux.inf", rndis_device.DeviceID);
+</script>
+</job>
+</package>
