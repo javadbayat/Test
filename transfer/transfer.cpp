@@ -39,7 +39,7 @@ typedef bool (* PFN_CALLBACK)(char *ipAddress);
 bool processEachIP(char *ipAddress) {
     char szRunFtpServer[1024];
 	memset(szRunFtpServer, 0, 1024);
-	sprintf(szRunFtpServer, "busybox tcpsvd -vE %s 8007 busybox ftpd -w \"%s\"", ipAddress, pszDirectory);
+	sprintf(szRunFtpServer, "busybox tcpsvd -vE %s 8007 busybox ftpd -w ~/storage/shared", ipAddress);
 	
     int nDots = 0, i;
 	int ipAddressLen = strlen(ipAddress);
