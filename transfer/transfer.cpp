@@ -83,7 +83,8 @@ bool processEachIP(char *ipAddress) {
     printf("Device Token: %s\n", deviceToken);
     printf("Wish to transfer files? (Y | N)...");
     fflush(stdin);
-    if (getc(stdin) == 'Y') {
+    char c = getc(stdin);
+    if ((c == 'Y') || (c == 'y')) {
         printf("\n");
         system(szRunFtpServer);
     }
