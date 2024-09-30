@@ -1,0 +1,1 @@
+~/bin/transfer "$(dirname '$1')"
