@@ -26,31 +26,37 @@ End Sub
 </script>
 <script language="JScript">
 var services = GetObject("winmgmts:");
-var query = 'SELECT * FROM CIM_LogicalDevice WHERE Description LIKE "%RNDIS%"';
-var col = services.ExecQuery(query);
-var rndis_device = null;
-for (var e = new Enumerator(col); !e.atEnd(); e.moveNext()) {
-    var device = e.item();
-    if (device.Status === null)
-        continue;
-    
-    if (device.ConfigManagerErrorCode == 24) {
-        if (device.DeviceID === null) {
-            WSH.Echo("Failed to obtain the Device Instance ID of the current RNDIS device!\nTechnical details: CIM_LogicalDevice.DeviceID returned NULL");
-            WSH.Quit();
-        }
-        
-        rndis_device = device;
-        break;
-    }
-}
-
-if (!rndis_device) {
+var unknown_device = find_unknown_device("USB");
+if (!unknown_device) {
     WSH.Echo("Failed to find the current RNDIS Network Adapter device!");
     WSH.Quit();
 }
 
-ModifyINF("linux.inf", rndis_device.DeviceID);
+ModifyINF("linux.inf", unknown_device.DeviceID);
+
+function find_unknown_device(nickName) {
+	var query = 'SELECT * FROM CIM_LogicalDevice WHERE DeviceID LIKE "%?%"';
+	query = query.replace("?", nickName);
+	var col = services.ExecQuery(query);
+	var unknown_device = null;
+	for (var e = new Enumerator(col); !e.atEnd(); e.moveNext()) {
+		var device = e.item();
+		if (device.Status === null)
+			continue;
+		
+		if (device.ConfigManagerErrorCode == 28) {
+			if (device.DeviceID === null) {
+				WSH.Echo("Failed to obtain the Device Instance ID of the current RNDIS device!\nTechnical details: CIM_LogicalDevice.DeviceID returned NULL");
+				WSH.Quit();
+			}
+			
+			unknown_device = device;
+			break;
+		}
+	}
+	
+	return unknown_device;
+}
 </script>
 </job>
 </package>
